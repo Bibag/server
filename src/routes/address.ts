@@ -4,6 +4,7 @@ import { BadRequestError, validateRequest } from '../common';
 import { body } from 'express-validator';
 import { Ward } from '../models/ward';
 import { District } from '../models/district';
+import { match } from '../ultils/search';
 
 const router = express.Router();
 
@@ -112,25 +113,53 @@ router.get('/api/address/ward', async (req: Request, res: Response) => {
 });
 
 router.get('/api/address/search', async (req: Request, res: Response) => {
-  const { search_key, search_term } = req.query;
-  switch (search_key) {
-    case 'city':
-      const cities = await City.find({ search: { $regex: search_term, $options: 'i' } });
-      res.status(201).json(cities);
-      break;
-    case 'district':
-      const districts = await District.find({ search: { $regex: search_term, $options: 'i' } });
-      res.status(201).json(districts);
-      break;
-    case 'ward':
-      const wards = await Ward.find({ search: { $regex: search_term, $options: 'i' } });
-      res.status(201).json(wards);
-      break;
-    default:
-      break;
+  const results = [];
+
+  try {
+    const { search_key, search_term } = req.query;
+
+    switch (search_key) {
+      case 'city':
+        {
+          const cities = await City.find({});
+          cities.forEach((city) => {
+            if (match(city.name, search_term as string)) {
+              results.push({ value: city.name });
+            }
+          });
+        }
+        break;
+      case 'district':
+        {
+          const districts = await District.find({});
+          districts.forEach((district) => {
+            if (match(district.name, search_term as string)) {
+              results.push({ value: `${district.full_name}` });
+            }
+          });
+        }
+        break;
+      case 'ward':
+        {
+          const districts = await District.find({});
+          const wards = await Ward.find({});
+          wards.forEach((ward) => {
+            if (match(ward.name, search_term as string)) {
+              results.push({
+                value: `${ward.name}, ${districts.find((district) => district.code === ward.district_code)?.full_name}`,
+              });
+            }
+          });
+        }
+        break;
+      default:
+        break;
+    }
+  } catch (error) {
+    console.error(error);
   }
 
-  res.status(201).json({});
+  res.status(201).json(results);
 });
 
 export { router as addressRouter };

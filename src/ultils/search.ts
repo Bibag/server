@@ -2,7 +2,7 @@ export const getFirstLetter = (str: string) => {
   return str.match(/\b(\w)/g).join('');
 };
 
-export function toNonAccentVietnamese(str) {
+export const toNonAccentVietnamese = (str: string) => {
   str = str.replace(/A|Á|À|Ã|Ạ|Â|Ấ|Ầ|Ẫ|Ậ|Ă|Ắ|Ằ|Ẵ|Ặ/g, 'A');
   str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
   str = str.replace(/E|É|È|Ẽ|Ẹ|Ê|Ế|Ề|Ễ|Ệ/, 'E');
@@ -20,8 +20,17 @@ export function toNonAccentVietnamese(str) {
   str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, '');
   str = str.replace(/\u02C6|\u0306|\u031B/g, '');
   return str;
-}
+};
 
 export const removeSpace = (str: string) => {
   return str.replace(/\s+/g, '');
+};
+
+export const match = (str: string, search_term: string) => {
+  const noneVietnamese = toNonAccentVietnamese(str);
+  const noneVietnameseRemoveSpace = removeSpace(noneVietnamese);
+  const firstLetters = getFirstLetter(noneVietnamese);
+  const search = [str, removeSpace(str), firstLetters, noneVietnamese, noneVietnameseRemoveSpace].join(' ');
+
+  return search.includes(search_term) || search.toLowerCase().includes(search_term);
 };
