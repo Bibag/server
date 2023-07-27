@@ -70,7 +70,7 @@ router.get('/api/address/district', async (req: Request, res: Response) => {
   const { city_code } = req.query;
   const districts = await District.find({ city_code });
 
-  res.status(201).json(districts?.filter((district) => district.city_code === city_code));
+  res.status(201).json(districts);
 });
 
 router.post(
