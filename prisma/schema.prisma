@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model City {
+  code     String     @id @unique
+  name     String
+  District District[]
+  Ward     Ward[]
+}
+
+model District {
+  code      String @id @unique
+  city_code String
+  don_vi    String
+  name      String
+  full_name String
+  city      City   @relation(fields: [city_code], references: [code])
+  Ward      Ward[]
+}
+
+model Ward {
+  code          String   @id @unique
+  city_code     String
+  district_code String
+  don_vi        String
+  name          String
+  district      District @relation(fields: [district_code], references: [code])
+  city          City     @relation(fields: [city_code], references: [code])
+}

@@ -12,6 +12,7 @@ import { updatePasswordRouter } from './routes/update-password';
 import { updateProfile } from './routes/update-profile';
 import { uploadSingle } from './routes/upload-single';
 import { addressRouter } from './routes/address';
+import { addressPrismaPostgrSqlRouter } from './routes/address-prisma-postgresql';
 
 const app = express();
 app.set('trust proxy', true);
@@ -31,7 +32,7 @@ app.use(signupRouter);
 app.use(updatePasswordRouter);
 app.use(updateProfile);
 app.use(uploadSingle);
-app.use(addressRouter);
+app.use(addressPrismaPostgrSqlRouter);
 
 app.all('*', async (req, res) => {
   throw new NotFoundError();
