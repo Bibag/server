@@ -113,11 +113,14 @@ router.get('/api/address/ward', async (req: Request, res: Response) => {
 });
 
 router.get('/api/address/search', async (req: Request, res: Response) => {
+  const { search_key, search_term } = req.query;
   const results = [];
 
-  try {
-    const { search_key, search_term } = req.query;
+  if (!search_term) {
+    res.status(201).json(results);
+  }
 
+  try {
     switch (search_key) {
       case 'city':
         {
