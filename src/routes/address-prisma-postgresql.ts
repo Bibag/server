@@ -129,7 +129,7 @@ router.get('/api/address/search', async (req: Request, res: Response) => {
     switch (search_key) {
       case 'city':
         {
-          const cities = await prisma.city.findMany({});
+          const cities = await prisma.city.findMany({ select: { name: true } });
           cities.forEach((city) => {
             if (match(city.name, search_term as string)) {
               results.push({ value: city.name });
@@ -139,7 +139,7 @@ router.get('/api/address/search', async (req: Request, res: Response) => {
         break;
       case 'district':
         {
-          const districts = await prisma.district.findMany({});
+          const districts = await prisma.district.findMany({ select: { name: true, full_name: true } });
           districts.forEach((district) => {
             if (match(district.name, search_term as string)) {
               results.push({ value: `${district.full_name}` });
@@ -149,7 +149,9 @@ router.get('/api/address/search', async (req: Request, res: Response) => {
         break;
       case 'ward':
         {
-          const wards = await prisma.ward.findMany({ include: { district: true } });
+          const wards = await prisma.ward.findMany({
+            select: { name: true, district: { select: { full_name: true } } },
+          });
           wards.forEach((ward) => {
             if (match(ward.name, search_term as string)) {
               results.push({
@@ -169,4 +171,4 @@ router.get('/api/address/search', async (req: Request, res: Response) => {
   res.status(201).json(results);
 });
 
-export { router as addressPrismaPostgrSqlRouter };
+export { router as addressPrismaPostgreSqlRouter };
