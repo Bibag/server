@@ -73,5 +73,3 @@ citySchema.statics.build = (attrs: CityAttrs) => {
 const City = mongoose.model<CityDoc, CityModel>('City', citySchema);
 
 export { City };
-
-getFirstLetter('Hello World');
